@@ -4,8 +4,10 @@ import MedicineItem from './Components/MedicineItem';
 function App() {
   return (
    <>
+  
    <MedicineForm></MedicineForm>
-    <MedicineItem></MedicineItem>
+   <MedicineItem></MedicineItem>
+    
    </>
   );
 }

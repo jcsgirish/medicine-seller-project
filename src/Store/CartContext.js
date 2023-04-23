@@ -1,91 +1,80 @@
-import React, {useEffect, useState } from 'react'
-const CartContext=React.createContext()
+import React, { useEffect, useState } from "react";
+
+const CartContext = React.createContext();
+
 export const CartProvider = (props) => {
-    const[data,setData]=useState([]);
-    const[cartData,setCartData]=useState([]);
-    let url="/";
+  const [productStore, setProductStore] = useState([]);
+  const [cartStore, setCartStore] = useState([]);
 
+  const apiUrl = "https://crudcrud.com/api/a30a88e4f425412d86124dcfde4f1ab8";
 
-    const getData=async()=>{
-        try{
-            const response=await fetch(`${url}/Medical`);
-            const data=await response.json();
-            setData(data);
-            console.log(data);
-        }catch(err)
-        {
-            console.log(err);
-        }
-    };
-    const postData=async(products)=>{
-        try{
-            const response=await fetch(`${url}/Medical`,
-            {
-                method:"POST",
-                 body:JSON.stringify(products),
-                 headers:{
-                    "content-type":"application/json",
-                 },
-            }
-            );
-            getData();
-        }catch(err){
-            console.log(err)
-        }
-
-    };
-   const getCartData=async()=>{
-    try{
-        const response=await fetch(`${url}/list`)
-        const data=await response.json()
-        setCartData(data);
-        console.log(cartData,"list");
-    }catch(err)
-    {
-        console.log(err);
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/Medicines`);
+      const data = await response.json();
+      setProductStore(data);
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-   };
-
-   const postCartData=async(cartData)=>{
-    try{
-        const response=await fetch(`${url}/list`,{
-            method:"POST",
-            body:JSON.stringify(cartData),
-            headers:{
-                "content-type":"application/json"
-            }
-        })
-        getCartData();
-    }catch(err)
-    {
-        console.log(err)
+  const addProduct = async (product) => {
+    try {
+      await fetch(`${apiUrl}/Medicines`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product),
+      });
+      fetchProducts();
+    } catch (error) {
+      console.error(error);
     }
-   };
-    
-   const addToCartHandler=(newData)=>{
-    postCartData(newData)
-   };
-   const addProductHandler=(products)=>{
-    postData(products)
-   };
+  };
 
-   useEffect(()=>{
-    getData();
-    getCartData();
-   },[])
+  const fetchCart = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/list`);
+      const data = await response.json();
+      setCartStore(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-   const contextValue={
-    productStore:data,
-    addProducts:addProductHandler,
-    cartStore:cartData,
-    addToCart:addToCartHandler
-   };
+  const addToCart = async (cartData) => {
+    try {
+      await fetch(`${apiUrl}/list`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cartData),
+      });
+      fetchCart();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCart();
+  }, []);
+
+  const contextValue = {
+    productStore,
+    addProduct,
+    cartStore,
+    addToCart,
+  };
+
   return (
     <CartContext.Provider value={contextValue}>
-        {props.children}
+      {props.children}
     </CartContext.Provider>
-  )
-}
+  );
+};
 
-export default CartContext
+export default CartContext ;
